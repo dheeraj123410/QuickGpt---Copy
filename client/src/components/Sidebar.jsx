@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import moment from "moment";
+import toast from "react-hot-toast";
 
 const Sidebar = ({ isMenuOpen, setMenuOpen }) => {
   const {
@@ -11,9 +12,49 @@ const Sidebar = ({ isMenuOpen, setMenuOpen }) => {
     setTheme,
     user,
     navigate,
+    createNewChat,
+    axios,
+    setChats,
+    fetchUserChats,
+    token,
+    setToken,
   } = useAppContext();
+  const [search , setSearch] = useState('')
 
-  const [search, setSearch] = useState("");
+  const logout = () =>{
+    localStorage.removeItem('token')
+    setToken(null)
+    toast.success('Logged out successfully')
+  }
+  const deleteChat = async(e, chatId)=>{
+    try{
+      e.stopPropagation()
+      const confirm = window.confirm('Are you sure to delete this chat?')
+      if(!confirm) return
+      const { data } = await axios.post(
+        '/api/chat/delete',
+        { chatId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      if(data.success){
+        setChats(prev => prev.filter(chat=> chat._id !== chatId))
+        await fetchUserChats('')
+        toast.success(data.message)
+      }
+
+    } catch(error){
+
+      toast.error(error.message)
+
+    }
+
+  }
+
+
 
   return (
     <div
@@ -29,7 +70,10 @@ const Sidebar = ({ isMenuOpen, setMenuOpen }) => {
       />
 
       {/* New Chat Button */}
-      <button className="flex items-center justify-center w-full mt-10 py-2 text-white bg-gradient-to-r from-[#A456F7] to-[#3D81F6] rounded-md text-sm cursor-pointer hover:opacity-90 transition">
+      <button
+        onClick={createNewChat}
+        className="flex items-center justify-center w-full mt-10 py-2 text-white bg-gradient-to-r from-[#A456F7] to-[#3D81F6] rounded-md text-sm cursor-pointer hover:opacity-90 transition"
+      >
         <span className="mr-2 text-xl">+</span> New Chat
       </button>
 
@@ -90,6 +134,8 @@ const Sidebar = ({ isMenuOpen, setMenuOpen }) => {
                 src={assets.bin_icon}
                 className="hidden group-hover:block w-4 cursor-pointer not-dark:invert"
                 alt="Delete"
+                  onClick={(e) => deleteChat(e, chat._id)}
+
               />
             </div>
           ))}
@@ -178,7 +224,7 @@ const Sidebar = ({ isMenuOpen, setMenuOpen }) => {
         </p>
 
         {user && (
-          <img
+          <img onClick={logout}
             src={assets.logout_icon}
             className="h-5 cursor-pointer hidden group-hover:block not-dark:invert"
             alt="Logout"
@@ -192,6 +238,9 @@ const Sidebar = ({ isMenuOpen, setMenuOpen }) => {
         src={assets.close_icon}
         className="absolute top-3 right-3 w-5 h-5 cursor-pointer md:hidden not-dark:invert"
         alt="Close"
+        onClick={e=>toast.promise(deleteChat(e, chat._id), {
+          loading:'deleting...' }
+        )}
       />
     </div>
   );

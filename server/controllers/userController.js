@@ -92,7 +92,7 @@ export const getPublishedImages = async(req, res) =>{
             {$unwind : "$messages"},
             {
                 $match:{
-                    "message.isImage" : true,
+                    "messages.isImage" : true,
                     "messages.isPublished": true
                 }
             },{
@@ -104,7 +104,7 @@ export const getPublishedImages = async(req, res) =>{
             }
         ]
     )
-        res.json({success:true ,Images: publishedImageMessages.reverse()})
+        res.json({success:true, images: publishedImageMessages.reverse()})
     } catch(error){
         return res.json({success:false, message:error.message})
 
