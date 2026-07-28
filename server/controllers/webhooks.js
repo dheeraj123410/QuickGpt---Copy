@@ -63,8 +63,6 @@ export const stripeWebhooks = async (request, response) => {
 
     }
 };*/
-<<<<<<< HEAD
-=======
 /*import Stripe from "stripe";
 import Transaction from "../models/Transaction.js";
 import User from "../models/User.js";
@@ -130,7 +128,6 @@ export const stripeWebhooks = async (request, response) => {
 
     }
 };*/
->>>>>>> 5294c053e0f6879d30d6b82af5a11b86b67086e4
 import Stripe from "stripe";
 import Transaction from "../models/Transaction.js";
 import User from "../models/User.js";
@@ -221,8 +218,5 @@ export const stripeWebhooks = async (request, response) => {
       message: error.message,
     });
   }
-<<<<<<< HEAD
 };
-=======
 };
->>>>>>> 5294c053e0f6879d30d6b82af5a11b86b67086e4
