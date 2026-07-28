@@ -219,4 +219,3 @@ export const stripeWebhooks = async (request, response) => {
     });
   }
 };
-};
